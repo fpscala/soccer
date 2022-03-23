@@ -1,8 +1,7 @@
 package uz.soccer.utils.ciris
 
-import shop.ext.derevo.Derive
-
 import _root_.ciris.ConfigDecoder
+import uz.soccer.utils.derevo.Derive
 
 object configDecoder extends Derive[Decoder.Id]
 

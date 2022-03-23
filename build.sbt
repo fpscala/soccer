@@ -7,8 +7,9 @@ ThisBuild / version      := "1.0"
 lazy val server = (project in file("modules/server"))
   .settings(
     name := "soccer",
-    libraryDependencies ++= coreLibraries
-  )
+    libraryDependencies ++= coreLibraries,
+    scalacOptions += "-Ymacro-annotations"
+)
   .settings(
     scalaJSProjects         := Seq(client),
     Assets / pipelineStages := Seq(scalaJSPipeline),

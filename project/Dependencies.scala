@@ -21,58 +21,61 @@ object Dependencies {
     val redis4cats    = "1.1.1"
     val newtype       = "0.4.4"
     val derevo        = "0.13.0"
+    val monocle       = "3.1.0"
 
     val weaver = "0.7.11"
   }
 
   object Libraries {
-    def circe(artifact: String): ModuleID = "io.circe" %% artifact % Versions.circe
+    def circe(artifact: String): ModuleID = "io.circe" %% s"circe-$artifact" % Versions.circe
 
     def skunk(artifact: String): ModuleID = "org.tpolecat" %% artifact % Versions.skunk
 
     def ciris(artifact: String): ModuleID = "is.cir" %% artifact % Versions.ciris
 
-    def http4s(artifact: String): ModuleID = "org.http4s" %% artifact % Versions.http4s
+    def http4s(artifact: String): ModuleID = "org.http4s" %% s"http4s-$artifact" % Versions.http4s
 
     def refined(artifact: String): ModuleID = "eu.timepit" %% artifact % Versions.refined
 
-    def derevo(artifact: String): ModuleID = "tf.tofu"    %% s"derevo-$artifact" % Versions.derevo
+    def derevo(artifact: String): ModuleID = "tf.tofu" %% s"derevo-$artifact" % Versions.derevo
 
-    val circeCore    = circe("circe-core")
-    val circeGeneric = circe("circe-generic")
-    val circeParser  = circe("circe-parser")
-    val circeRefined = circe("circe-refined")
+    val circeCore    = circe("core")
+    val circeGeneric = circe("generic")
+    val circeParser  = circe("parser")
+    val circeRefined = circe("refined")
 
     val skunkCore    = skunk("skunk-core")
     val skunkCirce   = skunk("skunk-circe")
     val skunkRefined = skunk("refined")
 
     val cirisCore    = ciris("ciris")
+    val cirisEnum    = ciris("ciris-enumeratum")
     val cirisRefined = ciris("ciris-refined")
 
     val derevoCore  = derevo("core")
     val derevoCats  = derevo("cats")
     val derevoCirce = derevo("circe-magnolia")
 
-    val http4sDsl    = http4s("http4s-dsl")
-    val http4sCore   = http4s("http4s-core")
-    val http4sServer = http4s("http4s-blaze-server")
-    val http4sClient = http4s("http4s-blaze-client")
-    val http4sCirce  = http4s("http4s-circe")
+    val http4sDsl    = http4s("dsl")
+    val http4sServer = http4s("ember-server")
+    val http4sClient = http4s("ember-client")
+    val http4sCirce  = http4s("circe")
 
-    val refinedType  = refined("refined")
-    val refinedCats  = refined("refined-cats")
+    val refinedType = refined("refined")
+    val refinedCats = refined("refined-cats")
 
     val redis4catsEffects = "dev.profunktor" %% "redis4cats-effects" % Versions.redis4cats
+    val redis4catsLog4cats = "dev.profunktor" %% "redis4cats-log4cats" % Versions.redis4cats
 
     val http4sJwtAuth = "dev.profunktor" %% "http4s-jwt-auth" % Versions.http4sJwtAuth
-    val cats       = "org.typelevel"      %% "cats-core"   % Versions.cats
-    val catsEffect = "org.typelevel"      %% "cats-effect" % Versions.catsEffect
-    val fs2        = "co.fs2"             %% "fs2-core"    % Versions.fs2
-    val newtype  = "io.estatico"   %% "newtype"        % Versions.newtype
+    val cats          = "org.typelevel"  %% "cats-core"       % Versions.cats
+    val catsEffect    = "org.typelevel"  %% "cats-effect"     % Versions.catsEffect
+    val fs2           = "co.fs2"         %% "fs2-core"        % Versions.fs2
+    val newtype       = "io.estatico"    %% "newtype"         % Versions.newtype
 
-    val log4cats = "org.typelevel" %% "log4cats-slf4j"  % Versions.log4cats
-    val logback  = "ch.qos.logback" % "logback-classic" % Versions.logback
+    val log4cats    = "org.typelevel" %% "log4cats-slf4j"  % Versions.log4cats
+    val logback     = "ch.qos.logback" % "logback-classic" % Versions.logback
+    val monocleCore = "dev.optics"    %% "monocle-core"    % Versions.monocle
 
     // Test
     val log4catsNoOp      = "org.typelevel"       %% "log4cats-noop"      % Versions.log4cats
@@ -86,9 +89,9 @@ object Dependencies {
 
   val catsLibs = Seq(cats, catsEffect)
 
-  val http4sLibs = Seq(http4sDsl, http4sCore, http4sServer, http4sClient, http4sCirce)
+  val http4sLibs = Seq(http4sDsl, http4sServer, http4sClient, http4sCirce)
 
-  val cirisLibs = Seq(cirisRefined, cirisCore)
+  val cirisLibs = Seq(cirisRefined, cirisCore, cirisEnum)
 
   val logLibs = Seq(log4cats, logback)
 
@@ -101,9 +104,12 @@ object Dependencies {
       Seq(
         fs2,
         refinedType,
+        refinedCats,
         redis4catsEffects,
+        redis4catsLog4cats,
         http4sJwtAuth,
-        newtype
+        newtype,
+        monocleCore
       )
 
   val testLibraries = Seq(
