@@ -4,49 +4,38 @@ ThisBuild / organization := "uz"
 ThisBuild / scalaVersion := "2.13.8"
 ThisBuild / version      := "1.0"
 
+lazy val root = (project in file("."))
+  .settings(
+    name := "soccer"
+  )
+  .aggregate(server, tests)
+
 lazy val server = (project in file("modules/server"))
   .settings(
     name := "soccer",
     libraryDependencies ++= coreLibraries,
-    scalacOptions += "-Ymacro-annotations"
-)
-  .settings(
-    scalaJSProjects         := Seq(client),
-    Assets / pipelineStages := Seq(scalaJSPipeline),
-    pipelineStages          := Seq(digest, gzip),
-    Compile / compile       := ((Compile / compile) dependsOn scalaJSPipeline).value)
-  .enablePlugins(WebScalaJSBundlerPlugin)
+    scalacOptions ++= Seq(
+      "-Ymacro-annotations",
+      "-encoding",
+      "utf8",             // Option and arguments on same line
+      "-Xfatal-warnings", // New lines for each options
+      "-deprecation",
+      "-unchecked",
+      "-language:implicitConversions",
+      "-language:higherKinds",
+      "-language:existentials",
+      "-language:postfixOps"
+    ),
+    coverageEnabled := true
+  )
 
 lazy val tests = project
   .in(file("modules/tests"))
   .configs(IntegrationTest)
   .settings(
     name := "soccer-test-suite",
+    testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
     Defaults.itSettings,
     libraryDependencies ++= testLibraries
   )
   .dependsOn(server)
-
-lazy val client = (project in file("modules/client"))
-  .settings(
-    name := "client",
-    scalaJSUseMainModuleInitializer := true,
-    resolvers += Resolver.sonatypeRepo("releases"),
-    libraryDependencies ++= Seq(
-      "io.github.chronoscala"             %%% "chronoscala"   % "2.0.2",
-      "com.github.japgolly.scalajs-react" %%% "core"          % Versions.scalaJsReact,
-      "com.github.japgolly.scalajs-react" %%% "extra"         % Versions.scalaJsReact,
-      "com.github.japgolly.scalacss"      %%% "ext-react"     % Versions.scalaCss,
-      "io.circe"                          %%% "circe-core"    % Versions.circe,
-      "io.circe"                          %%% "circe-parser"  % Versions.circe,
-      "io.circe"                          %%% "circe-generic" % Versions.circe,
-      "io.circe"                          %%% "circe-refined" % Versions.circe,
-      "eu.timepit"                        %%% "refined"       % Versions.refined
-    ),
-    webpackEmitSourceMaps := false,
-    Compile / npmDependencies ++= Seq(
-      "react" -> Versions.reactJs,
-      "react-dom" -> Versions.reactJs
-    )
-  )
-  .enablePlugins(ScalaJSBundlerPlugin)
