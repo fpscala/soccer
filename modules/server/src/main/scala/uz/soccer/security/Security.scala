@@ -51,12 +51,12 @@ object Security {
       auth      = Auth.make[F](cfg.tokenExpiration, tokens, users, redis, crypto)
       adminAuth = UsersAuth.admin[F](adminToken, adminUser)
       usersAuth = UsersAuth.common[F](redis)
-    } yield new Security[F](auth, adminAuth, usersAuth, adminJwtAuth, userJwtAuth) {}
+    } yield new Security[F](auth, adminAuth, usersAuth, adminJwtAuth, userJwtAuth)
 
   }
 }
 
-sealed abstract class Security[F[_]] private (
+final class Security[F[_]] private (
   val auth: Auth[F],
   val adminAuth: UsersAuth[F, AdminUser],
   val usersAuth: UsersAuth[F, CommonUser],

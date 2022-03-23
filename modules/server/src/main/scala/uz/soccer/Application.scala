@@ -21,7 +21,7 @@ object Application extends IOApp.Simple {
           AppResources[IO](cfg)
             .evalMap { res =>
               Security[IO](cfg, res.postgres, res.redis).map { security =>
-                cfg.serverConfig -> HttpApi[IO](cfg.logConfig).httpApp
+                cfg.serverConfig -> HttpApi[IO](security, cfg.logConfig).httpApp
               }
             }
             .flatMap { case (cfg, httpApp) =>

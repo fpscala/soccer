@@ -8,6 +8,7 @@ import eu.timepit.refined.auto._
 import io.circe.syntax._
 import pdi.jwt._
 import uz.soccer.effects.GenUUID
+import uz.soccer.implicits.GenericTypeOps
 import uz.soccer.types.{JwtAccessTokenKeyConfig, TokenExpiration}
 
 trait Tokens[F[_]] {
@@ -24,7 +25,7 @@ object Tokens {
       def create: F[JwtToken] =
         for {
           uuid  <- GenUUID[F].make
-          claim <- jwtExpire.expiresIn(JwtClaim(uuid.asJson.noSpaces), exp)
+          claim <- jwtExpire.expiresIn(JwtClaim(uuid.toJson), exp)
           secretKey = JwtSecretKey(config.secret)
           token <- jwtEncode[F](claim, secretKey, JwtAlgorithm.HS256)
         } yield token

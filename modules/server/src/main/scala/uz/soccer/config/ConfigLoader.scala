@@ -11,7 +11,7 @@ import eu.timepit.refined.types.string.NonEmptyString
 import uz.soccer.domain.custom.refinements.UriAddress
 import uz.soccer.types._
 
-import scala.concurrent.duration.{DurationInt, FiniteDuration}
+import scala.concurrent.duration.FiniteDuration
 
 object ConfigLoader {
   private[this] def databaseConfig: ConfigValue[Effect, DBConfig] = (
@@ -41,7 +41,6 @@ object ConfigLoader {
 
   private[this] def adminJwtConfig: ConfigValue[Effect, AdminJwtConfig] = (
     env("JWT_SECRET_KEY").as[JwtSecretKeyConfig].secret,
-    env("JWT_CLAIM").as[JwtClaimConfig].secret,
     env("ADMIN_USER_TOKEN").as[AdminUserTokenConfig].secret
   ).parMapN(AdminJwtConfig.apply)
 

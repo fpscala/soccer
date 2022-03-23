@@ -1,4 +1,4 @@
 #!/bin/bash
 
-source set_env.sh
+source env.sh
 sbt -mem 3000 "project server" ~reStart

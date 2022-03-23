@@ -19,7 +19,7 @@ class TokenGenerator extends IOApp {
   // A Claim can be any valid JSON
   val claim: JwtClaim = JwtClaim(
     """
-      {"claim": "example-claim"}
+      {"uuid": "b8e81b6e-aa96-11ec-b909-0242ac120002"}
     """
   )
 
