@@ -1,7 +1,4 @@
 # Project exclude paths
-/modules/client/target/
-/modules/server/target/
-/modules/tests/target/streams/
-/project/project/target/
-/project/target/
-/target/
+/target
+.idea
+.bsp
