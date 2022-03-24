@@ -3,10 +3,10 @@ package uz.soccer.services
 import cats._
 import cats.implicits._
 import dev.profunktor.auth.jwt.JwtToken
-import dev.profunktor.redis4cats.RedisCommands
 import pdi.jwt.JwtClaim
 import uz.soccer.http.auth.users._
 import uz.soccer.implicits.CirceDecoderOps
+import uz.soccer.services.redis.RedisClient
 
 import scala.tools.nsc.tasty.SafeEq
 
@@ -28,7 +28,7 @@ object UsersAuth {
     }
 
   def common[F[_]: Functor](
-    redis: RedisCommands[F, String, String]
+    redis: RedisClient[F]
   ): UsersAuth[F, CommonUser] =
     new UsersAuth[F, CommonUser] {
       def findUser(token: JwtToken)(claim: JwtClaim): F[Option[CommonUser]] =

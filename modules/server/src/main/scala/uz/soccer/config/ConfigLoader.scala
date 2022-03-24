@@ -14,7 +14,7 @@ import uz.soccer.types._
 import scala.concurrent.duration.FiniteDuration
 
 object ConfigLoader {
-  private[this] def databaseConfig: ConfigValue[Effect, DBConfig] = (
+  def databaseConfig: ConfigValue[Effect, DBConfig] = (
     env("POSTGRES_HOST").as[NonEmptyString],
     env("POSTGRES_PORT").as[UserPortNumber],
     env("POSTGRES_USER").as[NonEmptyString],
@@ -23,32 +23,33 @@ object ConfigLoader {
     env("POSTGRES_POOL_SIZE").as[PosInt]
   ).parMapN(DBConfig.apply)
 
-  private[this] def httpLogConfig: ConfigValue[Effect, LogConfig] = (
+  def httpLogConfig: ConfigValue[Effect, LogConfig] = (
     env("HTTP_HEADER_LOG").as[Boolean],
     env("HTTP_BODY_LOG").as[Boolean]
   ).parMapN(LogConfig.apply)
 
-  private[this] def httpServerConfig: ConfigValue[Effect, HttpServerConfig] = (
+  def httpServerConfig: ConfigValue[Effect, HttpServerConfig] = (
     env("HTTP_HOST").as[NonEmptyString],
     env("HTTP_PORT").as[UserPortNumber]
   ).parMapN(HttpServerConfig.apply)
 
-  private[this] def redisConfig: ConfigValue[Effect, RedisConfig] =
+  def redisConfig: ConfigValue[Effect, RedisConfig] =
     env("REDIS_SERVER_URI").as[UriAddress].map(RedisConfig.apply)
 
-  private[this] def tokenExpirationConfig: ConfigValue[Effect, TokenExpiration] =
-    env("JWT_TOKEN_EXPIRATION").as[FiniteDuration].map(TokenExpiration.apply)
-
-  private[this] def adminJwtConfig: ConfigValue[Effect, AdminJwtConfig] = (
+  def adminJwtConfig: ConfigValue[Effect, AdminJwtConfig] = (
     env("JWT_SECRET_KEY").as[JwtSecretKeyConfig].secret,
     env("ADMIN_USER_TOKEN").as[AdminUserTokenConfig].secret
   ).parMapN(AdminJwtConfig.apply)
 
-  def load[F[_]: Async]: F[AppConfig] = (
-    adminJwtConfig,
+  def jwtConfig: ConfigValue[Effect, JwtConfig] = (
     env("ACCESS_TOKEN_SECRET_KEY").as[JwtAccessTokenKeyConfig].secret,
     env("PASSWORD_SALT").as[PasswordSalt].secret,
-    tokenExpirationConfig,
+    env("JWT_TOKEN_EXPIRATION").as[FiniteDuration].map(TokenExpiration.apply)
+  ).parMapN(JwtConfig.apply)
+
+  def load[F[_]: Async]: F[AppConfig] = (
+    adminJwtConfig,
+    jwtConfig,
     databaseConfig,
     redisConfig,
     httpServerConfig,

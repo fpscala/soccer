@@ -6,10 +6,14 @@ import io.circe._
 import io.circe.syntax._
 import org.http4s._
 import org.http4s.circe._
+import uz.soccer.services.redis.RedisClient
+import uz.soccer.stub_services.RedisClientMock
 import weaver.scalacheck.Checkers
 import weaver.{Expectations, SimpleIOSuite}
 
 trait HttpSuite extends SimpleIOSuite with Checkers {
+
+  val RedisMock: RedisClient[IO] = RedisClientMock[IO]
 
   def expectHttpBodyAndStatus[A: Encoder](routes: HttpRoutes[IO], req: Request[IO])(
     expectedBody: A,
@@ -22,13 +26,13 @@ trait HttpSuite extends SimpleIOSuite with Checkers {
           expect.same(resp.status, expectedStatus) |+| expect
             .same(json.dropNullValues, expectedBody.asJson.dropNullValues)
         }
-      case None => IO.pure(failure("route nout found"))
+      case None => IO.pure(failure("route not found"))
     }
 
   def expectHttpStatus(routes: HttpRoutes[IO], req: Request[IO])(expectedStatus: Status): IO[Expectations] =
     routes.run(req).value.map {
       case Some(resp) => expect.same(resp.status, expectedStatus)
-      case None       => failure("route nout found")
+      case None       => failure("route not found")
     }
 
   def expectHttpFailure(routes: HttpRoutes[IO], req: Request[IO]): IO[Expectations] =

@@ -9,6 +9,7 @@ import io.circe._
 import io.estatico.newtype.macros.newtype
 import uz.soccer.types.uuid
 import io.circe.refined._
+import eu.timepit.refined.cats._
 
 import java.util.UUID
 import javax.crypto.Cipher
@@ -40,13 +41,13 @@ object auth {
 
   // --------- user registration -----------
 
-  @derive(decoder, encoder)
+  @derive(decoder, encoder, show)
   @newtype
   case class UserNameParam(value: NonEmptyString) {
     def toDomain: UserName = UserName(value.toLowerCase)
   }
 
-  @derive(decoder, encoder)
+  @derive(decoder, encoder, show)
   @newtype
   case class PasswordParam(value: NonEmptyString) {
     def toDomain: Password = Password(value)
@@ -67,7 +68,7 @@ object auth {
 
   // --------- user login -----------
 
-  @derive(decoder, encoder)
+  @derive(decoder, encoder, show)
   case class LoginUser(
     username: UserNameParam,
     password: PasswordParam

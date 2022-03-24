@@ -14,7 +14,6 @@ export REDIS_SERVER_URI="redis://localhost"
 export ACCESS_TOKEN_SECRET_KEY=dah3EeJ8xohtaeJ5ahyah-
 export JWT_SECRET_KEY=dah3EeJ8xohtaeJ5ahyah-
 export JWT_TOKEN_EXPIRATION=30.minutes
-#export JWT_CLAIM='{"uuid": "b8e81b6e-aa96-11ec-b909-0242ac120002"}'
 export ADMIN_USER_TOKEN=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1dWlkIjogImI4ZTgxYjZlLWFhOTYtMTFlYy1iOTA5LTAyNDJhYzEyMDAwMiJ9._VRMCSQRGWDqbRBjRmy-62nyG3IuInHw0Cs2h08VaRI
 export PASSWORD_SALT=06!grsnxXG0d*Pj496p6fuA*o
 export APP_ENV=test
