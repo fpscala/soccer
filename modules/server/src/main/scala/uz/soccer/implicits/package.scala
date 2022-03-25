@@ -2,17 +2,15 @@ package uz.soccer
 
 import cats.effect.{Async, Sync}
 import cats.implicits._
-import uz.soccer.domain.custom.exception.MultipartDecodeError
-import uz.soccer.domain.custom.refinements.Password
-import uz.soccer.domain.custom.utils.MapConvert
-import uz.soccer.domain.custom.utils.MapConvert.ValidationResult
-import eu.timepit.refined.auto.autoUnwrap
 import io.circe.parser.decode
 import io.circe.syntax.EncoderOps
 import io.circe.{Decoder, Encoder, Printer}
 import org.http4s.MediaType
 import org.http4s.headers.`Content-Type`
 import org.http4s.multipart.Part
+import uz.soccer.domain.custom.exception.MultipartDecodeError
+import uz.soccer.domain.custom.utils.MapConvert
+import uz.soccer.domain.custom.utils.MapConvert.ValidationResult
 
 package object implicits {
 

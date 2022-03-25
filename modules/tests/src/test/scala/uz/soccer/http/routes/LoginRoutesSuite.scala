@@ -45,6 +45,7 @@ object LoginRoutesSuite extends HttpSuite {
       c <- userCredentialGen
       b <- booleanGen
     } yield (u, c, b)
+
     forall(gen) { case (user, c, isCorrect) =>
       auth(jwtConfig, user, c.password.toDomain).flatMap { auth =>
         val (postData, shouldReturn) =
