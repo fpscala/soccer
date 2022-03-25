@@ -18,7 +18,7 @@ trait Auth[F[_]] {
 }
 
 object Auth {
-  def make[F[_]: MonadThrow](
+  def apply[F[_]: MonadThrow](
     tokenExpiration: TokenExpiration,
     tokens: Tokens[F],
     users: Users[F],

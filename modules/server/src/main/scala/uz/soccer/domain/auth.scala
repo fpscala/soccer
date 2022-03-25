@@ -53,7 +53,7 @@ object auth {
     def toDomain: Password = Password(value)
   }
 
-  @derive(decoder, encoder)
+  @derive(decoder, encoder, show)
   case class CreateUser(
     username: UserNameParam,
     password: PasswordParam

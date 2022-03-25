@@ -16,7 +16,7 @@ trait Crypto {
 }
 
 object Crypto {
-  def make[F[_]: Sync](passwordSalt: PasswordSalt): F[Crypto] =
+  def apply[F[_]: Sync](passwordSalt: PasswordSalt): F[Crypto] =
     Sync[F]
       .delay {
         val random  = new SecureRandom()

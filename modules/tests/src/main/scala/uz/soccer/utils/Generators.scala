@@ -31,7 +31,7 @@ object Generators {
     idGen(UserId.apply)
 
   val userNameGen: Gen[UserName] =
-    nesGen(UserName.apply)
+    nesGen(str => UserName.apply(str.toLowerCase))
 
   val userNameParamGen: Gen[UserNameParam] =
     arbitrary[NonEmptyString].map(UserNameParam.apply)
@@ -50,4 +50,10 @@ object Generators {
       n <- userNameParamGen
       p <- passwordParamGen
     } yield LoginUser(n, p)
+
+  val createUserGen: Gen[CreateUser] =
+    for {
+      n <- userNameParamGen
+      p <- passwordParamGen
+    } yield CreateUser(n, p)
 }

@@ -13,10 +13,11 @@ import uz.soccer.http.auth.users.{User, UserWithPassword}
 import uz.soccer.security.Crypto
 import uz.soccer.services.Users
 import uz.soccer.stub_services.{AuthMock, UsersStub}
-import uz.soccer.utils.Generators.{booleanGen, userCredentialGen, userGen}
+import uz.soccer.utils.Generators.{booleanGen, createUserGen, userGen}
 import uz.soccer.utils.HttpSuite
 
-object LoginRoutesSuite extends HttpSuite {
+object UserRoutesSuite extends HttpSuite {
+
   def users(user: User, pass: Password, crypto: Crypto): Users[F] = new UsersStub[F] {
     override def find(
       username: UserName
@@ -25,26 +26,31 @@ object LoginRoutesSuite extends HttpSuite {
         Option(UserWithPassword(user.id, user.name, crypto.encrypt(pass))).pure[F]
       else
         none[UserWithPassword].pure[F]
+
+    override def create(
+      username: UserName,
+      password: EncryptedPassword
+    ): F[UserId] = user.id.pure[F]
   }
 
-  test("POST login") {
+  test("POST create") {
     val gen = for {
       u <- userGen
-      c <- userCredentialGen
+      c <- createUserGen
       b <- booleanGen
     } yield (u, c, b)
 
-    forall(gen) { case (user, c, isCorrect) =>
+    forall(gen) { case (user, newUser, conflict) =>
       for {
         crypto <- Crypto[IO](jwtConfig.passwordSalt.value)
-        auth   <- AuthMock[IO](users(user, c.password.toDomain, crypto), crypto)
+        auth   <- AuthMock[IO](users(user, newUser.password.toDomain, crypto), crypto)
         (postData, shouldReturn) =
-          if (isCorrect)
-            (c.copy(username = UserNameParam(NonEmptyString.unsafeFrom(user.name.value))), Status.Ok)
+          if (conflict)
+            (newUser.copy(username = UserNameParam(NonEmptyString.unsafeFrom(user.name.value))), Status.Conflict)
           else
-            (c, Status.Forbidden)
-        req    = POST(postData, uri"/auth/login")
-        routes = LoginRoutes[IO](auth).routes
+            (newUser, Status.Created)
+        req    = POST(postData, uri"/auth/user")
+        routes = UserRoutes[IO](auth).routes
         res <- expectHttpStatus(routes, req)(shouldReturn)
       } yield res
     }

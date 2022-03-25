@@ -1,5 +1,4 @@
 package uz.soccer
-
 import ciris.Secret
 import eu.timepit.refined.types.string.NonEmptyString
 import uz.soccer.types.{JwtAccessTokenKeyConfig, PasswordSalt, TokenExpiration}
