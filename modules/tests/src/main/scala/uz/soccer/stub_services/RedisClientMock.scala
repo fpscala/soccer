@@ -2,6 +2,8 @@ package uz.soccer.stub_services
 
 import cats.Applicative
 import cats.implicits.{catsSyntaxApplicativeId, toFunctorOps}
+import io.circe.Encoder
+import uz.soccer.implicits.GenericTypeOps
 import uz.soccer.services.redis.RedisClient
 
 import scala.collection.mutable
@@ -16,6 +18,12 @@ object RedisClientMock {
       value: String,
       expire: FiniteDuration
     ): F[Unit] = Redis.put(key, value).pure[F].void
+
+    override def put[T: Encoder](
+      key: String,
+      value: T,
+      expire: FiniteDuration
+    ): F[Unit] = Redis.put(key, value.toJson).pure[F].void
 
     override def get(key: String): F[Option[String]] = Redis.get(key).pure[F]
 

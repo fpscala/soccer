@@ -2,7 +2,8 @@ package uz.soccer.security
 
 import cats.effect.Sync
 import cats.syntax.all._
-import uz.soccer.domain.auth.{DecryptCipher, EncryptCipher, EncryptedPassword, Password}
+import uz.soccer.domain.auth.{DecryptCipher, EncryptCipher, EncryptedPassword}
+import uz.soccer.domain.custom.refinements.Password
 import uz.soccer.types.PasswordSalt
 
 import java.security.SecureRandom
@@ -47,7 +48,7 @@ object Crypto {
             val base64 = Base64.getDecoder
             val bytes  = base64.decode(password.value.getBytes("UTF-8"))
             val result = new String(dc.value.doFinal(bytes), "UTF-8")
-            Password(result)
+            Password.unsafeFrom(result)
           }
         }
       }

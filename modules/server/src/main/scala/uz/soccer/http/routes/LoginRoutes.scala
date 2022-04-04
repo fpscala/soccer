@@ -7,7 +7,8 @@ import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
 import org.http4s.circe.JsonDecoder
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.Router
-import uz.soccer.domain.auth.{InvalidPassword, LoginUser, UserNotFound}
+import uz.soccer.domain
+import uz.soccer.domain.auth.{InvalidPassword, UserNotFound}
 import uz.soccer.domain.tokenEncoder
 import uz.soccer.services.Auth
 
@@ -18,9 +19,9 @@ final case class LoginRoutes[F[_]: JsonDecoder: MonadThrow](
   private[routes] val prefixPath = "/auth"
 
   private val httpRoutes: HttpRoutes[F] = HttpRoutes.of[F] { case req @ POST -> Root / "login" =>
-    req.decodeR[LoginUser] { user =>
+    req.decodeR[domain.Credentials] { credentials =>
       auth
-        .login(user.username.toDomain, user.password.toDomain)
+        .login(credentials)
         .flatMap(Ok(_))
         .recoverWith { case UserNotFound(_) | InvalidPassword(_) =>
           Forbidden()

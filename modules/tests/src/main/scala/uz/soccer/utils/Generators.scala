@@ -1,10 +1,14 @@
 package uz.soccer.utils
+
 import eu.timepit.refined.scalacheck.string._
 import eu.timepit.refined.types.string.NonEmptyString
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
 import uz.soccer.domain.auth._
+import uz.soccer.domain.custom.refinements.{EmailAddress, Password}
+import uz.soccer.domain.{Credentials, Gender, Role}
 import uz.soccer.http.auth.users.User
+import uz.soccer.utils.Arbitraries._
 
 import java.util.UUID
 
@@ -17,9 +21,12 @@ object Generators {
         Gen.buildableOfN[String, Char](n, Gen.alphaChar)
       }
 
-
-  val booleanGen: Gen[Boolean] =
-    Gen.oneOf(true, false)
+  def nonEmptyStringGen(min: Int, max: Int): Gen[String] =
+    Gen
+      .chooseNum(min, max)
+      .flatMap { n =>
+        Gen.buildableOfN[String, Char](n, Gen.alphaChar)
+      }
 
   def nesGen[A](f: String => A): Gen[A] =
     nonEmptyStringGen.map(f)
@@ -30,30 +37,39 @@ object Generators {
   val userIdGen: Gen[UserId] =
     idGen(UserId.apply)
 
-  val userNameGen: Gen[UserName] =
-    nesGen(str => UserName.apply(str.toLowerCase))
+  val usernameGen: Gen[UserName] =
+    arbitrary[NonEmptyString].map(UserName.apply)
 
-  val userNameParamGen: Gen[UserNameParam] =
-    arbitrary[NonEmptyString].map(UserNameParam.apply)
+  val passwordGen: Gen[Password] = arbitrary[Password]
 
-  val passwordParamGen: Gen[PasswordParam] =
-    arbitrary[NonEmptyString].map(PasswordParam.apply)
+  val booleanGen: Gen[Boolean] = arbitrary[Boolean]
+
+  val emailGen: Gen[EmailAddress] = arbitrary[EmailAddress]
+
+  val genderGen: Gen[Gender] = arbitrary[Gender]
+
+  val roleGen: Gen[Role] = arbitrary[Role]
 
   val userGen: Gen[User] =
     for {
       i <- userIdGen
-      n <- userNameGen
-    } yield User(i, n)
+      n <- usernameGen
+      e <- emailGen
+      g <- genderGen
+      r <- roleGen
+    } yield User(i, n, e, g, r)
 
-  val userCredentialGen: Gen[LoginUser] =
+  val userCredentialGen: Gen[Credentials] =
     for {
-      n <- userNameParamGen
-      p <- passwordParamGen
-    } yield LoginUser(n, p)
+      e <- emailGen
+      p <- passwordGen
+    } yield Credentials(e, p)
 
   val createUserGen: Gen[CreateUser] =
     for {
-      n <- userNameParamGen
-      p <- passwordParamGen
-    } yield CreateUser(n, p)
+      u <- usernameGen
+      e <- emailGen
+      g <- genderGen
+      p <- passwordGen
+    } yield CreateUser(u, e, g, p)
 }

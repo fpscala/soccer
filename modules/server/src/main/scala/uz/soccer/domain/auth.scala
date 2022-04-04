@@ -1,12 +1,11 @@
 package uz.soccer.domain
 
 import derevo.cats._
-import derevo.circe.magnolia.{ decoder, encoder }
+import derevo.circe.magnolia.{decoder, encoder}
 import derevo.derive
-import eu.timepit.refined.auto._
 import eu.timepit.refined.types.string.NonEmptyString
-import io.circe._
 import io.estatico.newtype.macros.newtype
+import uz.soccer.domain.custom.refinements.{EmailAddress, Password}
 import uz.soccer.types.uuid
 import io.circe.refined._
 import eu.timepit.refined.cats._
@@ -23,14 +22,6 @@ object auth {
 
   @derive(decoder, encoder, eqv, show)
   @newtype
-  case class UserName(value: String)
-
-  @derive(decoder, encoder, eqv, show)
-  @newtype
-  case class Password(value: String)
-
-  @derive(decoder, encoder, eqv, show)
-  @newtype
   case class EncryptedPassword(value: String)
 
   @newtype
@@ -43,45 +34,20 @@ object auth {
 
   @derive(decoder, encoder, show)
   @newtype
-  case class UserNameParam(value: NonEmptyString) {
-    def toDomain: UserName = UserName(value.toLowerCase)
-  }
-
-  @derive(decoder, encoder, show)
-  @newtype
-  case class PasswordParam(value: NonEmptyString) {
-    def toDomain: Password = Password(value)
-  }
+  case class UserName(value: NonEmptyString)
 
   @derive(decoder, encoder, show)
   case class CreateUser(
-    username: UserNameParam,
-    password: PasswordParam
+    name: UserName,
+    email: EmailAddress,
+    gender: Gender,
+    password: Password
   )
 
-  case class UserNotFound(username: UserName)    extends NoStackTrace
-  case class UserNameInUse(username: UserName)   extends NoStackTrace
-  case class InvalidPassword(username: UserName) extends NoStackTrace
+  case class UserNotFound(email: EmailAddress)    extends NoStackTrace
+  case class EmailInUse(email: EmailAddress)   extends NoStackTrace
+  case class InvalidPassword(email: EmailAddress) extends NoStackTrace
   case object UnsupportedOperation               extends NoStackTrace
 
   case object TokenNotFound extends NoStackTrace
-
-  // --------- user login -----------
-
-  @derive(decoder, encoder, show)
-  case class LoginUser(
-    username: UserNameParam,
-    password: PasswordParam
-  )
-
-  // --------- admin auth -----------
-
-  @newtype
-  case class ClaimContent(uuid: UUID)
-
-  object ClaimContent {
-    implicit val jsonDecoder: Decoder[ClaimContent] =
-      Decoder.forProduct1("uuid")(ClaimContent.apply)
-  }
-
 }
