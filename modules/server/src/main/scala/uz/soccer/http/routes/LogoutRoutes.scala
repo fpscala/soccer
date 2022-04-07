@@ -6,7 +6,7 @@ import dev.profunktor.auth.AuthHeaders
 import org.http4s._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server._
-import uz.soccer.http.auth.users.User
+import uz.soccer.domain.auth.User
 import uz.soccer.services.Auth
 
 final case class LogoutRoutes[F[_]: Monad](

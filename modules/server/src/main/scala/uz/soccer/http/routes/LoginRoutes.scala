@@ -8,7 +8,7 @@ import org.http4s.circe.JsonDecoder
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.Router
 import uz.soccer.domain
-import uz.soccer.domain.auth.{InvalidPassword, UserNotFound}
+import uz.soccer.domain.custom.exception.{InvalidPassword, UserNotFound}
 import uz.soccer.domain.tokenEncoder
 import uz.soccer.services.Auth
 

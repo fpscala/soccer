@@ -4,7 +4,7 @@ import cats._
 import cats.data.OptionT
 import dev.profunktor.auth.jwt.JwtToken
 import pdi.jwt.JwtClaim
-import uz.soccer.http.auth.users._
+import uz.soccer.domain.auth.User
 import uz.soccer.implicits.CirceDecoderOps
 import uz.soccer.services.redis.RedisClient
 

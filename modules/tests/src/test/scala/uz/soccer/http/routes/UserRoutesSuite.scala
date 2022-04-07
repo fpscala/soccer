@@ -10,7 +10,6 @@ import org.http4s.implicits.http4sLiteralsSyntax
 import uz.soccer.config.jwtConfig
 import uz.soccer.domain.auth._
 import uz.soccer.domain.custom.refinements.{EmailAddress, Password}
-import uz.soccer.http.auth.users.{User, UserWithPassword}
 import uz.soccer.security.Crypto
 import uz.soccer.services.Users
 import uz.soccer.stub_services.{AuthMock, UsersStub}

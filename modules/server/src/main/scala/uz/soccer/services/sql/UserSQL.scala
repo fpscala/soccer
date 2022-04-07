@@ -5,7 +5,7 @@ import skunk.implicits._
 import uz.soccer.domain.Role
 import uz.soccer.domain.auth.{CreateUser, EncryptedPassword, UserId}
 import uz.soccer.domain.custom.refinements.EmailAddress
-import uz.soccer.http.auth.users.User
+import uz.soccer.domain.auth.User
 
 object UserSQL {
   private val Columns = userId ~ userName ~ email ~ gender ~ encPassword ~ role

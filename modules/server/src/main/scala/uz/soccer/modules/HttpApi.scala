@@ -9,7 +9,7 @@ import org.http4s.server.Router
 import org.http4s.server.middleware._
 import org.typelevel.log4cats.Logger
 import uz.soccer.config.LogConfig
-import uz.soccer.http.auth.users.User
+import uz.soccer.domain.auth.User
 import uz.soccer.http.routes.{LoginRoutes, LogoutRoutes, UserRoutes}
 import uz.soccer.security.Security
 

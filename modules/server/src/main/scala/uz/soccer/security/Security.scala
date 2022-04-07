@@ -7,7 +7,7 @@ import eu.timepit.refined.auto._
 import pdi.jwt._
 import skunk.Session
 import uz.soccer.config.AppConfig
-import uz.soccer.http.auth.users._
+import uz.soccer.domain.auth.{User, UserJwtAuth}
 import uz.soccer.services.redis.RedisClient
 import uz.soccer.services.{Auth, Users, UsersAuth}
 

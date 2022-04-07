@@ -5,21 +5,14 @@ import eu.timepit.refined.types.string.NonEmptyString
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
 import uz.soccer.domain.auth._
-import uz.soccer.domain.custom.refinements.{EmailAddress, Password}
+import uz.soccer.domain.custom.refinements.{EmailAddress, FileName, Password}
 import uz.soccer.domain.{Credentials, Gender, Role}
-import uz.soccer.http.auth.users.User
+import uz.soccer.domain.auth.User
 import uz.soccer.utils.Arbitraries._
 
 import java.util.UUID
 
 object Generators {
-
-  val nonEmptyStringGen: Gen[String] =
-    Gen
-      .chooseNum(21, 40)
-      .flatMap { n =>
-        Gen.buildableOfN[String, Char](n, Gen.alphaChar)
-      }
 
   def nonEmptyStringGen(min: Int, max: Int): Gen[String] =
     Gen
@@ -28,8 +21,12 @@ object Generators {
         Gen.buildableOfN[String, Char](n, Gen.alphaChar)
       }
 
-  def nesGen[A](f: String => A): Gen[A] =
-    nonEmptyStringGen.map(f)
+  def nonEmptyAlphaNumGen(min: Int, max: Int): Gen[String] =
+    Gen
+      .chooseNum(min, max)
+      .flatMap { n =>
+        Gen.buildableOfN[String, Char](n, Gen.alphaNumChar)
+      }
 
   def idGen[A](f: UUID => A): Gen[A] =
     Gen.uuid.map(f)
@@ -45,6 +42,8 @@ object Generators {
   val booleanGen: Gen[Boolean] = arbitrary[Boolean]
 
   val emailGen: Gen[EmailAddress] = arbitrary[EmailAddress]
+
+  val filenameGen: Gen[FileName] = arbitrary[FileName]
 
   val genderGen: Gen[Gender] = arbitrary[Gender]
 

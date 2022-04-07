@@ -7,9 +7,9 @@ import skunk._
 import skunk.implicits._
 import uz.soccer.domain.ID
 import uz.soccer.domain.auth._
+import uz.soccer.domain.custom.exception.EmailInUse
 import uz.soccer.domain.custom.refinements.EmailAddress
 import uz.soccer.effects.GenUUID
-import uz.soccer.http.auth.users._
 import uz.soccer.services.sql.UserSQL._
 
 trait Users[F[_]] {

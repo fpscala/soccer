@@ -1,9 +1,11 @@
 package uz.soccer.utils
+
+import org.http4s.MediaType
+import org.scalacheck.Arbitrary
 import org.scalacheck.Gen._
-import org.scalacheck.{Arbitrary, Gen}
-import uz.soccer.domain.custom.refinements.{EmailAddress, Password}
+import uz.soccer.domain.custom.refinements.{EmailAddress, FileName, Password}
 import uz.soccer.domain.{Gender, Role}
-import uz.soccer.utils.Generators.nonEmptyStringGen
+import uz.soccer.utils.Generators.{nonEmptyAlphaNumGen, nonEmptyStringGen}
 
 object Arbitraries {
 
@@ -24,5 +26,12 @@ object Arbitraries {
       s2 <- numChar
       s3 <- oneOf("!@#$%^&*")
     } yield Password.unsafeFrom(s"$s0$s1$s2$s3")
+  )
+
+  implicit lazy val arbFileName: Arbitrary[FileName] = Arbitrary(
+    for {
+      s0 <- nonEmptyStringGen(5, 30)
+      s1 <- oneOf(MediaType.allMediaTypes.flatMap(_.fileExtensions))
+    } yield FileName.unsafeFrom(s"$s0.$s1")
   )
 }
