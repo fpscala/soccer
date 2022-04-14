@@ -2,8 +2,8 @@ package uz.soccer.security
 
 import cats.effect.Sync
 import cats.syntax.all._
-import uz.soccer.domain.auth.{DecryptCipher, EncryptCipher, EncryptedPassword}
 import uz.soccer.domain.custom.refinements.Password
+import uz.soccer.domain.types.{DecryptCipher, EncryptCipher, EncryptedPassword}
 import uz.soccer.types.PasswordSalt
 
 import java.security.SecureRandom

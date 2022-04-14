@@ -5,9 +5,9 @@ import skunk.Codec
 import skunk.codec.all.{uuid, varchar}
 import skunk.data.{Arr, Type}
 import uz.soccer.domain.{Gender, Role}
-import uz.soccer.domain.auth.{EncryptedPassword, UserId, UserName}
 import uz.soccer.domain.custom.refinements.EmailAddress
 import eu.timepit.refined.auto.autoUnwrap
+import uz.soccer.domain.types.{EncryptedPassword, UserId, UserName}
 
 import java.util.UUID
 import scala.util.Try

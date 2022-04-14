@@ -8,8 +8,10 @@ import org.http4s.Status
 import org.http4s.client.dsl.io._
 import org.http4s.implicits.http4sLiteralsSyntax
 import uz.soccer.config.jwtConfig
-import uz.soccer.domain.auth._
+import uz.soccer.domain.User
+import uz.soccer.domain.User.{CreateUser, UserWithPassword}
 import uz.soccer.domain.custom.refinements.{EmailAddress, Password}
+import uz.soccer.domain.types.EncryptedPassword
 import uz.soccer.security.Crypto
 import uz.soccer.services.Users
 import uz.soccer.stub_services.{AuthMock, UsersStub}

@@ -5,7 +5,7 @@ import cats.syntax.all._
 import dev.profunktor.auth.jwt.JwtToken
 import eu.timepit.refined.auto.autoUnwrap
 import uz.soccer.domain._
-import uz.soccer.domain.auth._
+import uz.soccer.domain.User._
 import uz.soccer.domain.custom.exception.{EmailInUse, InvalidPassword, UserNotFound}
 import uz.soccer.domain.custom.refinements.EmailAddress
 import uz.soccer.implicits.GenericTypeOps

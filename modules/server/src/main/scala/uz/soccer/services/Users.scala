@@ -5,10 +5,11 @@ import cats.effect._
 import cats.syntax.all._
 import skunk._
 import skunk.implicits._
-import uz.soccer.domain.ID
-import uz.soccer.domain.auth._
+import uz.soccer.domain.{ID, User}
+import uz.soccer.domain.User._
 import uz.soccer.domain.custom.exception.EmailInUse
 import uz.soccer.domain.custom.refinements.EmailAddress
+import uz.soccer.domain.types.{EncryptedPassword, UserId}
 import uz.soccer.effects.GenUUID
 import uz.soccer.services.sql.UserSQL._
 

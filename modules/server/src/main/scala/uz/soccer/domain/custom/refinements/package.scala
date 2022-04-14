@@ -10,6 +10,7 @@ package object refinements {
   private type PasswordPred = MatchesRegex["^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[A-Z])[a-zA-Z0-9!@#$%^&*]{6,32}$"]
   private type FullNamePred = MatchesRegex["^[a-zA-Z]{3,}(?:\\s[a-zA-Z]+)+$"]
   private type FileNamePred = MatchesRegex["^[\\w,\\s-]+\\.[A-Za-z0-z-]{1,}$"]
+  private type TelNumberPred = MatchesRegex["^[+][0-9]{12}$"]
 
   type FullName = String Refined FullNamePred
   object FullName extends RefinedTypeOps[FullName, String]
@@ -28,5 +29,8 @@ package object refinements {
 
   type FileName = String Refined FileNamePred
   object FileName extends RefinedTypeOps[FileName, String]
+
+  type Tel = String Refined TelNumberPred
+  object Tel extends RefinedTypeOps[Tel, String]
 
 }

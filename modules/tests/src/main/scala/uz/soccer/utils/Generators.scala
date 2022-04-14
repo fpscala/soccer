@@ -4,10 +4,10 @@ import eu.timepit.refined.scalacheck.string._
 import eu.timepit.refined.types.string.NonEmptyString
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
-import uz.soccer.domain.auth._
+import uz.soccer.domain.User._
 import uz.soccer.domain.custom.refinements.{EmailAddress, FileName, Password}
-import uz.soccer.domain.{Credentials, Gender, Role}
-import uz.soccer.domain.auth.User
+import uz.soccer.domain.types.{UserId, UserName}
+import uz.soccer.domain.{Credentials, Gender, Role, User}
 import uz.soccer.utils.Arbitraries._
 
 import java.util.UUID

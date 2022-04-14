@@ -10,7 +10,7 @@ import org.http4s.server.Router
 import uz.soccer.domain.tokenEncoder
 import uz.soccer.services.Auth
 import io.circe.refined._
-import uz.soccer.domain.auth.CreateUser
+import uz.soccer.domain.User.CreateUser
 import uz.soccer.domain.custom.exception.EmailInUse
 
 final case class UserRoutes[F[_]: JsonDecoder: MonadThrow](
