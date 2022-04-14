@@ -7,9 +7,9 @@ import uz.soccer.domain.types.{MatchId, StadiumId}
 import java.time.LocalDateTime
 
 @derive(decoder, encoder, show)
-case class Match(uuid: MatchId, startTime: LocalDateTime, endTime: LocalDateTime, stadium: StadiumId)
+case class Match(uuid: MatchId, startTime: LocalDateTime, endTime: LocalDateTime, stadiumId: StadiumId)
 
 object Match {
   @derive(decoder, encoder, show)
-  case class CreateMatch(startTime: LocalDateTime, endTime: LocalDateTime, stadium: StadiumId)
+  case class CreateMatch(startTime: LocalDateTime, endTime: LocalDateTime, stadiumId: StadiumId)
 }

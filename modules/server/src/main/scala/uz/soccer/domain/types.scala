@@ -29,7 +29,7 @@ object types {
   @newtype case class UserJwtAuth(value: JwtSymmetricAuth)
 
   @derive(decoder, encoder, show)
-  @newtype case class Address(value: String)
+  @newtype case class Address(value: NonEmptyString)
 
   @derive(decoder, encoder, eqv, show, uuid)
   @newtype case class StadiumId(value: UUID)

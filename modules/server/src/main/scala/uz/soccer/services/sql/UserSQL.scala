@@ -8,6 +8,8 @@ import uz.soccer.domain.types._
 import uz.soccer.domain.{Role, User}
 
 object UserSQL {
+  val userId: Codec[UserId] = identity[UserId]
+
   private val Columns = userId ~ userName ~ email ~ gender ~ encPassword ~ role
 
   val encoder: Encoder[UserId ~ CreateUser ~ EncryptedPassword] =
@@ -20,15 +22,9 @@ object UserSQL {
     }
 
   val selectUser: Query[EmailAddress, User ~ EncryptedPassword] =
-    sql"""
-        SELECT * FROM users
-        WHERE email = $email
-       """.query(decoder)
+    sql"""SELECT * FROM users WHERE email = $email""".query(decoder)
 
   val insertUser: Query[UserId ~ CreateUser ~ EncryptedPassword, User ~ EncryptedPassword] =
-    sql"""
-        INSERT INTO users
-        VALUES ($encoder)
-        """.query(decoder)
+    sql"""INSERT INTO users VALUES ($encoder) returning *""".query(decoder)
 
 }
