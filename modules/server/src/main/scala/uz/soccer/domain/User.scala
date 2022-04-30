@@ -3,6 +3,8 @@ package uz.soccer.domain
 import derevo.cats._
 import derevo.circe.magnolia.{decoder, encoder}
 import derevo.derive
+import tsec.passwordhashers.PasswordHash
+import tsec.passwordhashers.jca.SCrypt
 import uz.soccer.domain.custom.refinements.{EmailAddress, Password}
 import uz.soccer.domain.types._
 import io.circe.refined._
@@ -21,5 +23,5 @@ object User {
   )
 
   @derive(decoder, encoder)
-  case class UserWithPassword(user: User, password: EncryptedPassword)
+  case class UserWithPassword(user: User, password: PasswordHash[SCrypt])
 }

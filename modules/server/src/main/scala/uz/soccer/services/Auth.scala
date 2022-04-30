@@ -1,15 +1,16 @@
 package uz.soccer.services
 
-import cats._
+import cats.effect.Sync
 import cats.syntax.all._
 import dev.profunktor.auth.jwt.JwtToken
 import eu.timepit.refined.auto.autoUnwrap
-import uz.soccer.domain._
+import tsec.passwordhashers.jca.SCrypt
 import uz.soccer.domain.User._
+import uz.soccer.domain._
 import uz.soccer.domain.custom.exception.{EmailInUse, InvalidPassword, UserNotFound}
 import uz.soccer.domain.custom.refinements.EmailAddress
 import uz.soccer.implicits.GenericTypeOps
-import uz.soccer.security.{Crypto, Tokens}
+import uz.soccer.security.Tokens
 import uz.soccer.services.redis.RedisClient
 import uz.soccer.types.TokenExpiration
 
@@ -20,12 +21,11 @@ trait Auth[F[_]] {
 }
 
 object Auth {
-  def apply[F[_]: MonadThrow](
+  def apply[F[_]: Sync](
     tokenExpiration: TokenExpiration,
     tokens: Tokens[F],
     users: Users[F],
-    redis: RedisClient[F],
-    crypto: Crypto
+    redis: RedisClient[F]
   ): Auth[F] =
     new Auth[F] {
 
@@ -37,7 +37,8 @@ object Auth {
             EmailInUse(userParam.email).raiseError[F, JwtToken]
           case None =>
             for {
-              user <- users.create(userParam, crypto.encrypt(userParam.password))
+              hash <- SCrypt.hashpw[F](userParam.password)
+              user <- users.create(userParam, hash)
               t    <- tokens.create
               _    <- redis.put(t.value, user, TokenExpiration)
               _    <- redis.put(user.email, t.value, TokenExpiration)
@@ -48,14 +49,14 @@ object Auth {
         users.find(credentials.email).flatMap {
           case None =>
             UserNotFound(credentials.email).raiseError[F, JwtToken]
-          case Some(user) if user.password =!= crypto.encrypt(credentials.password) =>
+          case Some(user) if !SCrypt.checkpwUnsafe(credentials.password, user.password) =>
             InvalidPassword(credentials.email).raiseError[F, JwtToken]
-          case Some(user) =>
+          case Some(userWithPass) =>
             redis.get(credentials.email).flatMap {
               case Some(t) => JwtToken(t).pure[F]
               case None =>
                 tokens.create.flatTap { t =>
-                  redis.put(t.value, user.toJson, TokenExpiration) *>
+                  redis.put(t.value, userWithPass.user, TokenExpiration) *>
                     redis.put(credentials.email, t.value, TokenExpiration)
                 }
             }

@@ -1,29 +1,30 @@
 package uz.soccer.http.routes
 
-import cats.effect.IO
+import cats.effect.{IO, Sync}
 import cats.implicits._
 import eu.timepit.refined.auto.autoUnwrap
 import org.http4s.Method.POST
 import org.http4s.Status
 import org.http4s.client.dsl.io._
 import org.http4s.implicits.http4sLiteralsSyntax
-import uz.soccer.config.jwtConfig
+import tsec.passwordhashers.jca.SCrypt
 import uz.soccer.domain.User
 import uz.soccer.domain.User.UserWithPassword
 import uz.soccer.domain.custom.refinements.{EmailAddress, Password}
-import uz.soccer.security.Crypto
 import uz.soccer.services.Users
 import uz.soccer.stub_services.{AuthMock, UsersStub}
 import uz.soccer.utils.Generators.{booleanGen, userCredentialGen, userGen}
 import uz.soccer.utils.HttpSuite
 
 object LoginRoutesSuite extends HttpSuite {
-  def users(user: User, pass: Password, crypto: Crypto): Users[F] = new UsersStub[F] {
+  def users[F[_]: Sync](user: User, pass: Password): Users[F] = new UsersStub[F] {
     override def find(
       email: EmailAddress
     ): F[Option[UserWithPassword]] =
       if (user.email.equalsIgnoreCase(email))
-        UserWithPassword(user, crypto.encrypt(pass)).some.pure[IO]
+        SCrypt.hashpw[F](pass).map { hash =>
+          UserWithPassword(user, hash).some
+        }
       else
         none[UserWithPassword].pure[F]
   }
@@ -37,8 +38,7 @@ object LoginRoutesSuite extends HttpSuite {
 
     forall(gen) { case (user, c, isCorrect) =>
       for {
-        crypto <- Crypto[IO](jwtConfig.passwordSalt.value)
-        auth   <- AuthMock[IO](users(user, c.password, crypto), crypto)
+        auth <- AuthMock[IO](users(user, c.password))
         (postData, shouldReturn) =
           if (isCorrect)
             (c.copy(email = user.email), Status.Ok)

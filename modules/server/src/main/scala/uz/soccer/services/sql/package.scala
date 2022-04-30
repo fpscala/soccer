@@ -5,10 +5,12 @@ import skunk.Codec
 import skunk.codec.all.{uuid, varchar}
 import skunk.data.{Arr, Type}
 import uz.soccer.domain.custom.refinements.{EmailAddress, Tel}
-import uz.soccer.domain.types.{Address, EncryptedPassword, Owner, TeamName, UserName}
+import uz.soccer.domain.types.{Address, Owner, TeamName, UserName}
 import uz.soccer.domain.{Gender, Role}
 import uz.soccer.types.IsUUID
 import eu.timepit.refined.auto.autoUnwrap
+import tsec.passwordhashers.PasswordHash
+import tsec.passwordhashers.jca.SCrypt
 
 import java.util.UUID
 import scala.util.Try
@@ -28,7 +30,7 @@ package object sql {
 
   val teamName: Codec[TeamName] = varchar.imap[TeamName](name => TeamName(NonEmptyString.unsafeFrom(name)))(_.value)
 
-  val encPassword: Codec[EncryptedPassword] = varchar.imap[EncryptedPassword](EncryptedPassword.apply)(_.value)
+  val passwordHash: Codec[PasswordHash[SCrypt]] = varchar.imap[PasswordHash[SCrypt]](PasswordHash[SCrypt])(_.toString)
 
   val email: Codec[EmailAddress] = varchar.imap[EmailAddress](EmailAddress.unsafeFrom)(_.value)
 
