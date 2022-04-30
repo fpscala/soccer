@@ -13,7 +13,7 @@ import org.typelevel.log4cats.Logger
 import pdi.jwt.JwtClaim
 import uz.soccer.config.LogConfig
 import uz.soccer.domain.User
-import uz.soccer.http.routes.{LoginRoutes, LogoutRoutes, UserRoutes}
+import uz.soccer.http.routes.{AuthRoutes, UserRoutes}
 import uz.soccer.implicits.CirceDecoderOps
 import uz.soccer.security.Security
 import uz.soccer.services.redis.RedisClient
@@ -45,16 +45,15 @@ final class HttpApi[F[_]: Async: Logger] private (
     JwtAuthMiddleware[F, User](security.userJwtAuth.value, findUser)
 
   // Auth routes
-  private[this] val loginRoutes  = LoginRoutes[F](security.auth).routes
-  private[this] val userRoutes   = UserRoutes[F](security.auth).routes
-  private[this] val logoutRoutes = LogoutRoutes[F](security.auth).routes(usersMiddleware)
+  private[this] val userRoutes = new UserRoutes[F].routes(usersMiddleware)
+  private[this] val authRoutes = AuthRoutes[F](security.auth).routes(usersMiddleware)
 
   // Open routes
-  private[this] val openRoutes: HttpRoutes[F] =
-    userRoutes <+> loginRoutes <+> logoutRoutes
+  private[this] val httpRoutes: HttpRoutes[F] =
+    userRoutes <+> authRoutes
 
   private[this] val routes: HttpRoutes[F] = Router(
-    baseURL -> openRoutes
+    baseURL -> httpRoutes
   )
 
   private[this] val middleware: HttpRoutes[F] => HttpRoutes[F] = {

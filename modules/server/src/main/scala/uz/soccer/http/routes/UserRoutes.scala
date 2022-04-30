@@ -1,38 +1,23 @@
 package uz.soccer.http.routes
 
 import cats.MonadThrow
-import cats.syntax.all._
-import org.http4s._
 import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
 import org.http4s.circe.JsonDecoder
 import org.http4s.dsl.Http4sDsl
-import org.http4s.server.Router
-import uz.soccer.domain.tokenEncoder
-import uz.soccer.services.Auth
-import io.circe.refined._
-import uz.soccer.domain.User.CreateUser
-import uz.soccer.domain.custom.exception.EmailInUse
+import org.http4s.server.{AuthMiddleware, Router}
+import org.http4s.{AuthedRoutes, _}
+import uz.soccer.domain.User
 
-final case class UserRoutes[F[_]: JsonDecoder: MonadThrow](
-  auth: Auth[F]
-) extends Http4sDsl[F] {
+final class UserRoutes[F[_]: JsonDecoder: MonadThrow] extends Http4sDsl[F] {
 
-  private[routes] val prefixPath = "/auth"
+  private[routes] val prefixPath = "/user"
 
-  private[this] val httpRoutes: HttpRoutes[F] = HttpRoutes.of[F] { case req @ POST -> Root / "user" =>
-    req.decodeR[CreateUser] { user =>
-      auth
-        .newUser(user)
-        .flatMap(Created(_))
-        .recoverWith { case EmailInUse(u) =>
-          Conflict(u)
-        }
-    }
-
+  private[this] val httpRoutes: AuthedRoutes[User, F] = AuthedRoutes.of { case GET -> Root as user =>
+    Ok(user)
   }
 
-  val routes: HttpRoutes[F] = Router(
-    prefixPath -> httpRoutes
+  def routes(authMiddleware: AuthMiddleware[F, User]): HttpRoutes[F] = Router(
+    prefixPath -> authMiddleware(httpRoutes)
   )
 
 }
