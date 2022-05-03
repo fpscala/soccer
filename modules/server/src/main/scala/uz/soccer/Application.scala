@@ -26,7 +26,7 @@ object Application extends IOApp.Simple {
               val services = Services[IO]
 
               Security[IO](cfg, services.users, res.redis).map { security =>
-                cfg.serverConfig -> HttpApi[IO](security, res.redis, cfg.logConfig).httpApp
+                cfg.serverConfig -> HttpApi[IO](security, services, res.redis, cfg.logConfig).httpApp
               }
             }
             .flatMap { case (cfg, httpApp) =>

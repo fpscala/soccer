@@ -13,7 +13,7 @@ import org.typelevel.log4cats.Logger
 import pdi.jwt.JwtClaim
 import uz.soccer.config.LogConfig
 import uz.soccer.domain.User
-import uz.soccer.http.routes.{AuthRoutes, UserRoutes}
+import uz.soccer.http.routes._
 import uz.soccer.implicits.CirceDecoderOps
 import uz.soccer.security.Security
 import uz.soccer.services.redis.RedisClient
@@ -23,14 +23,16 @@ import scala.concurrent.duration.DurationInt
 object HttpApi {
   def apply[F[_]: Async: Logger](
     security: Security[F],
+    services: Services[F],
     redis: RedisClient[F],
     logConfig: LogConfig
   )(implicit F: Sync[F]): HttpApi[F] =
-    new HttpApi[F](security, redis, logConfig)
+    new HttpApi[F](security, services, redis, logConfig)
 }
 
 final class HttpApi[F[_]: Async: Logger] private (
   security: Security[F],
+  services: Services[F],
   redis: RedisClient[F],
   logConfig: LogConfig
 ) {
@@ -47,10 +49,11 @@ final class HttpApi[F[_]: Async: Logger] private (
   // Auth routes
   private[this] val userRoutes = new UserRoutes[F].routes(usersMiddleware)
   private[this] val authRoutes = AuthRoutes[F](security.auth).routes(usersMiddleware)
+  private[this] val teamRoutes = TeamRoutes[F](services.teams).routes(usersMiddleware)
 
   // Open routes
   private[this] val httpRoutes: HttpRoutes[F] =
-    userRoutes <+> authRoutes
+    userRoutes <+> authRoutes <+> teamRoutes
 
   private[this] val routes: HttpRoutes[F] = Router(
     baseURL -> httpRoutes

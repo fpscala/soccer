@@ -2,7 +2,7 @@ package uz.soccer.services
 
 import eu.timepit.refined.types.string.NonEmptyString
 import skunk.Codec
-import skunk.codec.all.{uuid, varchar}
+import skunk.codec.all._
 import skunk.data.{Arr, Type}
 import uz.soccer.domain.custom.refinements.{EmailAddress, Tel}
 import uz.soccer.domain.types.{Address, Owner, TeamName, UserName}
@@ -40,8 +40,8 @@ package object sql {
 
   val owner: Codec[Owner] = varchar.imap[Owner](str => Owner(NonEmptyString.unsafeFrom(str)))(_.value)
 
-  val gender: Codec[Gender] = varchar.imap[Gender](Gender.unsafeFrom)(_.value)
+  val gender: Codec[Gender] = `enum`[Gender](_.value, Gender.find, Type("gender"))
 
-  val role: Codec[Role] = varchar.imap[Role](Role.unsafeFrom)(_.value)
+  val role: Codec[Role] = `enum`[Role](_.value, Role.find, Type("role"))
 
 }
