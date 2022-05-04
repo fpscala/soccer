@@ -4,11 +4,12 @@ import eu.timepit.refined.scalacheck.string._
 import eu.timepit.refined.types.string.NonEmptyString
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
+import uz.soccer.domain.Stadium.CreateStadium
 import uz.soccer.domain.Team.CreateTeam
 import uz.soccer.domain.User._
-import uz.soccer.domain.custom.refinements.{EmailAddress, FileName, Password}
-import uz.soccer.domain.types.{TeamId, TeamName, UserId, UserName}
-import uz.soccer.domain.{Credentials, Gender, Role, Team, User}
+import uz.soccer.domain.custom.refinements.{EmailAddress, FileName, Password, Tel}
+import uz.soccer.domain.types._
+import uz.soccer.domain.{Credentials, Gender, Role, Stadium, Team, User}
 import uz.soccer.utils.Arbitraries._
 
 import java.util.UUID
@@ -29,6 +30,8 @@ object Generators {
         Gen.buildableOfN[String, Char](n, Gen.alphaNumChar)
       }
 
+  def numberGen(length: Int): Gen[String] = Gen.buildableOfN[String, Char](length, Gen.numChar)
+
   def idGen[A](f: UUID => A): Gen[A] =
     Gen.uuid.map(f)
 
@@ -38,14 +41,25 @@ object Generators {
   val teamIdGen: Gen[TeamId] =
     idGen(TeamId.apply)
 
+  val stadiumIdGen: Gen[StadiumId] =
+    idGen(StadiumId.apply)
+
   val usernameGen: Gen[UserName] =
     arbitrary[NonEmptyString].map(UserName.apply)
+
+  val addressGen: Gen[Address] =
+    arbitrary[NonEmptyString].map(Address.apply)
+
+  val ownerGen: Gen[Owner] =
+    arbitrary[NonEmptyString].map(Owner.apply)
 
   val teamNameGen: Gen[TeamName] = arbitrary[NonEmptyString].map(TeamName.apply)
 
   val createTeamGen: Gen[CreateTeam] = teamNameGen.map(CreateTeam.apply)
 
   val passwordGen: Gen[Password] = arbitrary[Password]
+
+  val telGen: Gen[Tel] = arbitrary[Tel]
 
   val booleanGen: Gen[Boolean] = arbitrary[Boolean]
 
@@ -85,4 +99,19 @@ object Generators {
       g <- genderGen
       p <- passwordGen
     } yield CreateUser(u, e, g, p)
+
+  val createStadiumGen: Gen[CreateStadium] =
+    for {
+      a <- addressGen
+      o <- ownerGen
+      t <- telGen
+    } yield CreateStadium(a, o, t)
+
+  val stadiumGen: Gen[Stadium] =
+    for {
+      i <- stadiumIdGen
+      a <- addressGen
+      o <- ownerGen
+      t <- telGen
+    } yield Stadium(i, a, o, t)
 }

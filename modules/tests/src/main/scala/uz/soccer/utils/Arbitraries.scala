@@ -3,9 +3,9 @@ package uz.soccer.utils
 import org.http4s.MediaType
 import org.scalacheck.Arbitrary
 import org.scalacheck.Gen._
-import uz.soccer.domain.custom.refinements.{EmailAddress, FileName, Password}
+import uz.soccer.domain.custom.refinements.{EmailAddress, FileName, Password, Tel}
 import uz.soccer.domain.{Gender, Role}
-import uz.soccer.utils.Generators.{nonEmptyAlphaNumGen, nonEmptyStringGen}
+import uz.soccer.utils.Generators.{nonEmptyAlphaNumGen, nonEmptyStringGen, numberGen}
 
 object Arbitraries {
 
@@ -18,6 +18,8 @@ object Arbitraries {
       s2 <- nonEmptyStringGen(2, 3)
     } yield EmailAddress.unsafeFrom(s"$s0@$s1.$s2")
   )
+
+  implicit lazy val arbTel: Arbitrary[Tel] = Arbitrary(numberGen(12).map("+" + _).map(Tel.unsafeFrom))
 
   implicit lazy val arbPassword: Arbitrary[Password] = Arbitrary(
     for {

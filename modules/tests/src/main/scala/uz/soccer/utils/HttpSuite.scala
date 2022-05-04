@@ -9,15 +9,18 @@ import io.circe._
 import io.circe.syntax._
 import org.http4s._
 import org.http4s.circe._
+import org.http4s.headers.Authorization
 import org.http4s.server.AuthMiddleware
 import pdi.jwt.{JwtAlgorithm, JwtClaim}
 import uz.soccer.config.jwtConfig
 import uz.soccer.domain.User
 import uz.soccer.implicits.CirceDecoderOps
 import uz.soccer.services.redis.RedisClient
-import uz.soccer.stub_services.RedisClientMock
+import uz.soccer.stub_services.{AuthMock, RedisClientMock}
 import weaver.scalacheck.Checkers
 import weaver.{Expectations, SimpleIOSuite}
+
+import scala.concurrent.duration.DurationInt
 
 trait HttpSuite extends SimpleIOSuite with Checkers {
 
@@ -30,6 +33,12 @@ trait HttpSuite extends SimpleIOSuite with Checkers {
 
   protected val usersMiddleware: AuthMiddleware[F, User] =
     JwtAuthMiddleware[F, User](JwtAuth.hmac(jwtConfig.tokenConfig.value.secret, JwtAlgorithm.HS256), findUser)
+
+  def authToken(user: User): IO[Authorization] =
+    for {
+      token <- AuthMock.tokens[IO].flatMap(_.create)
+      _     <- RedisClient.put(token.value, user, 1.minute)
+    } yield Authorization(Credentials.Token(AuthScheme.Bearer, token.value))
 
   def expectHttpBodyAndStatus[A: Encoder](routes: HttpRoutes[IO], req: Request[IO])(
     expectedBody: A,

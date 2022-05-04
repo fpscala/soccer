@@ -33,12 +33,6 @@ object TeamRoutesSuite extends HttpSuite {
     override def delete(teamId: TeamId): F[Unit]            = Sync[F].unit
   }
 
-  def authToken(user: User): IO[Authorization] =
-    for {
-      token <- AuthMock.tokens[IO].flatMap(_.create)
-      _     <- RedisClient.put(token.value, user, 1.minute)
-    } yield Authorization(Credentials.Token(AuthScheme.Bearer, token.value))
-
   test("POST Create team") {
     val gen = for {
       u <- userGen
