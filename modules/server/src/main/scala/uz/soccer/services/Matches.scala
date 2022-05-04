@@ -5,6 +5,7 @@ import cats.syntax.all._
 import skunk._
 import skunk.implicits._
 import uz.soccer.domain.Match.CreateMatch
+import uz.soccer.domain.custom.exception.{DateTimeInCorrect, StadiumIdInCorrect}
 import uz.soccer.domain.types.MatchId
 import uz.soccer.domain.{ID, Match}
 import uz.soccer.effects.GenUUID
@@ -27,6 +28,12 @@ object Matches {
       ID.make[F, MatchId]
         .flatMap { id =>
           prepQueryUnique(MatchSql.insert, id ~ `match`)
+        }
+        .recoverWith {
+          case SqlState.ForeignKeyViolation(_) =>
+            StadiumIdInCorrect(`match`.stadiumId).raiseError[F, Match]
+          case SqlState.DatetimeFieldOverflow(_) =>
+            DateTimeInCorrect(`match`.startTime, `match`.endTime).raiseError[F, Match]
         }
 
     override def update(`match`: Match): F[Unit] =

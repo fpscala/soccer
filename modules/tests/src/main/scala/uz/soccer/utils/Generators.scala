@@ -4,14 +4,16 @@ import eu.timepit.refined.scalacheck.string._
 import eu.timepit.refined.types.string.NonEmptyString
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
+import uz.soccer.domain.Match.CreateMatch
 import uz.soccer.domain.Stadium.CreateStadium
 import uz.soccer.domain.Team.CreateTeam
 import uz.soccer.domain.User._
 import uz.soccer.domain.custom.refinements.{EmailAddress, FileName, Password, Tel}
 import uz.soccer.domain.types._
-import uz.soccer.domain.{Credentials, Gender, Role, Stadium, Team, User}
+import uz.soccer.domain.{Credentials, Gender, Match, Role, Stadium, Team, User}
 import uz.soccer.utils.Arbitraries._
 
+import java.time.LocalDateTime
 import java.util.UUID
 
 object Generators {
@@ -44,6 +46,9 @@ object Generators {
   val stadiumIdGen: Gen[StadiumId] =
     idGen(StadiumId.apply)
 
+  val matchIdGen: Gen[MatchId] =
+    idGen(MatchId.apply)
+
   val usernameGen: Gen[UserName] =
     arbitrary[NonEmptyString].map(UserName.apply)
 
@@ -58,6 +63,8 @@ object Generators {
   val createTeamGen: Gen[CreateTeam] = teamNameGen.map(CreateTeam.apply)
 
   val passwordGen: Gen[Password] = arbitrary[Password]
+
+  val dateTimeGen: Gen[LocalDateTime] = arbitrary[LocalDateTime]
 
   val telGen: Gen[Tel] = arbitrary[Tel]
 
@@ -114,4 +121,19 @@ object Generators {
       o <- ownerGen
       t <- telGen
     } yield Stadium(i, a, o, t)
+
+  val createMatchGen: Gen[CreateMatch] =
+    for {
+      st <- dateTimeGen
+      et <- dateTimeGen
+      s  <- stadiumIdGen
+    } yield CreateMatch(st, et, s)
+
+  val matchGen: Gen[Match] =
+    for {
+      i  <- matchIdGen
+      st <- dateTimeGen
+      et <- dateTimeGen
+      s  <- stadiumIdGen
+    } yield Match(i, st, et, s)
 }
